@@ -32,11 +32,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-#awsmobilejs
-aws-info.json
-project-info.json
-aws-exports.js
+.idea
+wild-rydes-mobile.iml
+
 awsmobilejs
-awsmobilejs/.awsmobile/backend-build
-awsmobilejs/\#current-backend-info
-~awsmobilejs-*/
+appsync-info.json
+aws-exports.js
