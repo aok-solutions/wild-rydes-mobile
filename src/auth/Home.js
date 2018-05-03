@@ -1,4 +1,5 @@
 import React from 'react'
+import { Analytics } from 'aws-amplify'
 import {
   View,
   Text,
@@ -24,14 +25,18 @@ class Home extends React.Component {
   state = {
     greeting: 'SIGN UP'
   }
+
   signUp = () => {
+    Analytics.record('Apply button clicked')
     this.props.navigation.navigate('Apply')
   }
+
   onChangeText = (key, value) => {
     this.setState({
       [key]: value
     })
   }
+
   render() {
     const open = () => this.props.navigation.navigate('DrawerOpen')
     return (
