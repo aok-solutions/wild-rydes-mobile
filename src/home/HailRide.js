@@ -24,10 +24,12 @@ class HailRide extends React.Component {
     unicornFetched: false,
     requestRideEnabled: true
   }
+
   componentDidMount() {
     this.getLocation()
     setInterval(() => this.getLocation, 1000 * 60 * 15)
   }
+
   getLocation() {
     navigator.geolocation.getCurrentPosition((res) => {
       const { latitude, longitude } = res.coords
@@ -43,17 +45,53 @@ class HailRide extends React.Component {
       this.setState({ loading: false })
     })
   }
+
   signOut() {
     Auth.signOut()
       .then(() => this.props.navigation.navigate('AuthNav'))
   }
+
   async onPress() {
-    console.log('fetching unicorn!!!')
+    const updates = ['Requesting Unicorn...']
+    try {
+      this.setState({
+        requestRideEnabled: false,
+        updates
+      });
+
+      const data = await this.getData(this.state.pin);
+      console.log('data from API: ', data);
+      updates.push(`Your unicorn, ${data.Unicorn.Name} will be with you in ${data.Eta} seconds`);
+      this.setState({ updates });
+
+      setTimeout(() => {
+        console.log('ride complete');
+        const updateList = this.state.updates;
+        updateList.push([ `${data.Unicorn.Name} has arrived` ]);
+        this.setState({
+          updates: updateList,
+          requestRideEnabled: true
+        });
+      }, data.Eta * 1000);
+    } catch (error) {
+      console.error(error);
+      updates.push([ 'Error finding unicorn' ]);
+      this.setState({ updates });
+    }
   }
 
-  async getData(pin) {
-    console.log('place get data logic here')
+  async getData() {
+    const { pin } = this.state
+    const body = {
+      PickupLocation: {
+        Longitude: pin.longitude,
+        Latitude: pin.latitude
+      }
+    };
+
+    return await API.post(apiName, apiPath, { body })
   }
+
   render() {
     console.log('updates: ', this.state.updates)
     return (
