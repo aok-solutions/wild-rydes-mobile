@@ -32,3 +32,6 @@ awsmobilejs
 awsmobilejs/.awsmobile/backend-build
 awsmobilejs/\#current-backend-info
 ~awsmobilejs-*/
+
+.idea
+wild-rydes-mobile.iml
