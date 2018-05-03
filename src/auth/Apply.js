@@ -1,4 +1,5 @@
 import React from 'react'
+import { Auth } from 'aws-amplify'
 import {
   View,
   Text,
@@ -24,16 +25,44 @@ class Apply extends React.Component {
     confirmationCode: '',
     showConfirmation: false
   }
+
   onChangeText = (key, value) => {
     this.setState({ [key]: value })
   }
+
   signUp = () => {
-    this.setState({ showConfirmation: true })
+    const {
+      email,
+      username,
+      phone_number,
+      password
+    } = this.state
+
+    Auth.signUp({
+      username,
+      password,
+      attributes: {
+        email,
+        phone_number
+      }
+    })
+      .then(success => {
+      console.log('successful sign up: ', success)
+      this.setState({ showConfirmation: true })
+    })
+      .catch(error => console.log('error signing up: ', error))
   }
+
   confirmSignUp = () => {
-    this.setState({ showConfirmation: false })
-    this.props.navigation.navigate('SignIn')
+    const { username, confirmationCode } = this.state
+    Auth.confirmSignUp(username, confirmationCode)
+      .then(success => {
+      console.log('successfully confirmed sign up!: ', success)
+      this.props.navigation.navigate('SignIn')
+    })
+      .catch(error => console.log('error confirming sign up: ', error))
   }
+
   render() {
     const open = () => this.props.navigation.navigate('DrawerOpen')
     return (

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Auth } from 'aws-amplify'
 import {
   View,
   Text,
@@ -23,16 +24,40 @@ class SignIn extends React.Component {
     confirmationCode: '',
     showConfirmation: false
   }
+
+  componentDidMount() {
+    Auth.currentAuthenticatedUser()
+      .then(success => this.props.navigation.navigate('HomeNav'))
+      .catch(error => console.log('not signed in...: ', error))
+  }
+
   onChangeText = (key, value) => {
     this.setState({ [key]: value })
   }
+
   signIn = () => {
-    this.setState({ showConfirmation: true })
+    const { username, password } = this.state
+    Auth.signIn(username, password)
+      .then(user => {
+	      console.log('successful sign in: ', user)
+        this.setState({ showConfirmation: true, user })
+      })
+      .catch(error => console.log('error signing in...: ', error))
   }
+
   confirmsignIn = () => {
-    this.setState({ showConfirmation: false })
-    this.props.navigation.navigate('HomeNav')
+    const { user, confirmationCode } = this.state
+    Auth.confirmSignIn(user, confirmationCode)
+	    .then(success => {
+	      console.log('success confirming sign in: ', success)
+        this.props.navigation.navigate('HomeNav')
+	    })
+      .catch(error => {
+	      console.log('error confirming sign in...: ', error)
+        this.setState({ showConfirmation: false })
+      })
   }
+
   render() {
     const open = () => this.props.navigation.navigate('DrawerOpen')
     return (
